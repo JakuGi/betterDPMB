@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 import type { I18nKey } from "@/lib/i18n";
 import { useT } from "@/lib/client/store";
-import { useServiceWorker } from "./InstallApp";
+import { isInApp, useServiceWorker } from "./InstallApp";
 import { IconAlert, IconHome, IconLines, IconMap, IconRoute, IconSettings, IconStop } from "./icons";
 
 const NAV = [
@@ -26,6 +26,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
+
+  // v Android appke sa správame ako natívna appka (bez označovania textu podržaním)
+  useEffect(() => {
+    if (isInApp()) document.documentElement.classList.add("in-app");
+  }, []);
 
   return (
     <div className="flex min-h-dvh flex-col">

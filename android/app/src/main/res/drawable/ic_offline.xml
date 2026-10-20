@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- prečiarknutá Wi-Fi -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="72dp"
+    android:height="72dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M2,2L22,22M8.5,16.5a5,5 0,0 1,7 0M5,12.9a10,10 0,0 1,5.2 -2.7M19,12.9a10,10 0,0 0,-2 -1.6M2,8.8a15,15 0,0 1,4.2 -2.6M22,8.8A15,15 0,0 0,10.7 4.9M12,20h0.01"
+        android:strokeWidth="2"
+        android:strokeColor="#9CA3AF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

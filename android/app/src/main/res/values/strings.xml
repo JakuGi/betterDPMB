@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">LepšieDPMB</string>
-    <string name="host_name" translatable="false">betterdpmb.vercel.app</string>
-    <string name="launch_url" translatable="false">https://betterdpmb.vercel.app/</string>
-    <!-- prepojenie appky s webom; web to potvrdzuje v /.well-known/assetlinks.json -->
-    <string name="asset_statements" translatable="false">
-        [{
-            \"relation\": [\"delegate_permission/common.handle_all_urls\"],
-            \"target\": {\"namespace\": \"web\", \"site\": \"https://betterdpmb.vercel.app\"}
-        }]
-    </string>
+    <string name="app_name" translatable="false">LepšieDPMB</string>
+    <string name="offline_title">Jsi offline</string>
+    <string name="offline_text">Nepodařilo se načíst spojení. Zkontroluj připojení k internetu.</string>
+    <string name="retry">Zkusit znovu</string>
 </resources>

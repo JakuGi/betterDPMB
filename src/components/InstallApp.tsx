@@ -40,6 +40,11 @@ const DISMISS_KEY = "lepsieDPMB:installDismissed";
 
 type Platform = "android" | "ios" | "desktop";
 
+/** Beží web vnútri našej Android appky? (appka pridáva značku do User-Agent) */
+export function isInApp(): boolean {
+  return typeof navigator !== "undefined" && navigator.userAgent.includes("LepsieDPMBApp");
+}
+
 function detectPlatform(): Platform {
   const ua = navigator.userAgent;
   if (/android/i.test(ua)) return "android";
@@ -58,8 +63,8 @@ function isStandalone(): boolean {
 export function useInstall() {
   const canPrompt = useSyncExternalStore(subscribe, () => deferred != null, () => false);
   const installedNow = useSyncExternalStore(subscribe, () => justInstalled, () => false);
-  const [env, setEnv] = useState<{ platform: Platform; standalone: boolean } | null>(null);
-  useEffect(() => setEnv({ platform: detectPlatform(), standalone: isStandalone() }), []);
+  const [env, setEnv] = useState<{ platform: Platform; standalone: boolean; inApp: boolean } | null>(null);
+  useEffect(() => setEnv({ platform: detectPlatform(), standalone: isStandalone(), inApp: isInApp() }), []);
 
   const promptInstall = async () => {
     if (!deferred) return;
@@ -70,13 +75,13 @@ export function useInstall() {
     notify();
   };
 
-  return { ready: env != null, platform: env?.platform ?? "desktop", installed: !!env?.standalone || installedNow, canPrompt, promptInstall };
+  return { ready: env != null, platform: env?.platform ?? "desktop", inApp: !!env?.inApp, installed: !!env?.standalone || installedNow, canPrompt, promptInstall };
 }
 
-/** Karta s inštaláciou appky. `dismissible` = dá sa skryť (na úvodnej stránke). */
-export function InstallCard({ dismissible = false }: { dismissible?: boolean }) {
+/** Karta s inštaláciou appky. `dismissible` = dá sa skryť (na úvodnej stránke). V appke sa nezobrazuje. */
+export function InstallCard({ dismissible = false, title }: { dismissible?: boolean; title?: React.ReactNode }) {
   const { t } = useT();
-  const { ready, platform, installed, canPrompt, promptInstall } = useInstall();
+  const { ready, platform, inApp, installed, canPrompt, promptInstall } = useInstall();
   const [dismissed, setDismissed] = useState(true);
 
   useEffect(() => {
@@ -87,9 +92,12 @@ export function InstallCard({ dismissible = false }: { dismissible?: boolean }) 
     }
   }, [dismissible]);
 
-  if (!ready || (dismissible && (dismissed || installed))) return null;
+  if (!ready || inApp || (dismissible && (dismissed || installed))) return null;
+  const android = platform === "android";
 
   return (
+    <>
+    {title}
     <section className="relative rounded-2xl border border-line bg-card p-4 shadow-sm">
       {dismissible && (
         <button
@@ -110,7 +118,16 @@ export function InstallCard({ dismissible = false }: { dismissible?: boolean }) 
       <div className="flex items-start gap-3 pr-6">
         <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand text-lg font-black text-white">B</span>
         <div className="min-w-0 text-sm">
-          {installed ? (
+          {android ? (
+            <>
+              <p className="font-semibold">{t("androidTitle")}</p>
+              <p className="mt-0.5 text-muted">{t("androidText")}</p>
+              <a href={APK_URL} target="_blank" rel="noreferrer" className="mt-3 inline-block rounded-xl bg-brand px-4 py-2 font-semibold text-white shadow-sm hover:bg-brand-dark">
+                {t("androidBtn")}
+              </a>
+              <p className="mt-2 text-xs text-muted">{t("androidHint")}</p>
+            </>
+          ) : installed ? (
             <p className="font-semibold">{t("installed")}</p>
           ) : (
             <>
@@ -121,21 +138,14 @@ export function InstallCard({ dismissible = false }: { dismissible?: boolean }) 
                   {t("installBtn")}
                 </button>
               ) : (
-                <p className="mt-2 text-fg">{platform === "ios" ? t("installIos") : platform === "android" ? t("installAndroid") : t("installDesktop")}</p>
+                <p className="mt-2 text-fg">{platform === "ios" ? t("installIos") : t("installDesktop")}</p>
               )}
             </>
-          )}
-          {platform === "android" && !dismissible && (
-            <p className="mt-3 text-xs text-muted">
-              {t("apkAlt")}{" "}
-              <a href={APK_URL} target="_blank" rel="noreferrer" className="underline">
-                GitHub
-              </a>
-            </p>
           )}
         </div>
       </div>
     </section>
+    </>
   );
 }
 

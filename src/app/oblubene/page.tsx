@@ -100,8 +100,7 @@ export default function FavoritesPage() {
         </Card>
       )}
 
-      <SectionTitle>{t("appSection")}</SectionTitle>
-      <InstallCard />
+      <InstallCard title={<SectionTitle>{t("appSection")}</SectionTitle>} />
 
       <SectionTitle>{t("myPlaces")}</SectionTitle>
       <Card className="space-y-3 p-4">

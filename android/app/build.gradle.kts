@@ -21,8 +21,8 @@ android {
         minSdk = 26
         targetSdk = 36
         // Google Play vyžaduje pri každom nahratí vyššie číslo verzie.
-        versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()
-        versionName = System.getenv("VERSION_NAME") ?: "1.0.0"
+        versionCode = (System.getenv("VERSION_CODE") ?: "2").toInt()
+        versionName = System.getenv("VERSION_NAME") ?: "1.1.0"
     }
 
     signingConfigs {
@@ -43,6 +43,6 @@ android {
 }
 
 dependencies {
-    // Trusted Web Activity – appka otvorí web v Chrome na celú obrazovku (bez adresného riadka).
-    implementation("com.google.androidbrowserhelper:androidbrowserhelper:2.7.4")
+    // ComponentActivity, EdgeToEdge, OnBackPressedDispatcher, ActivityResult (povolenie polohy)
+    implementation("androidx.activity:activity:1.13.0")
 }

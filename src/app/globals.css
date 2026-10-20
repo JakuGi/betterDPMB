@@ -47,6 +47,18 @@ body {
   overscroll-behavior-y: none;
 }
 
+/* v Android appke: bez označovania textu a kontextového menu pri podržaní */
+.in-app body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.in-app input,
+.in-app textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 .tabular {
   font-variant-numeric: tabular-nums;
 }

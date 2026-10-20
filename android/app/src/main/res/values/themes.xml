@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- svetlá téma → web vo WebView dostane prefers-color-scheme: light -->
     <style name="Theme.LepsieDPMB" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowBackground">@color/background</item>
-        <item name="android:statusBarColor">@color/status_bar</item>
-        <item name="android:navigationBarColor">@color/status_bar</item>
+        <item name="android:windowBackground">@color/bars</item>
+        <item name="android:colorAccent">@color/brand</item>
     </style>
 </resources>

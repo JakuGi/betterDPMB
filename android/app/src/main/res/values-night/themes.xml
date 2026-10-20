@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- tmavá téma → web vo WebView dostane prefers-color-scheme: dark -->
+    <style name="Theme.LepsieDPMB" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/bars</item>
+        <item name="android:colorAccent">@color/brand</item>
+    </style>
+</resources>

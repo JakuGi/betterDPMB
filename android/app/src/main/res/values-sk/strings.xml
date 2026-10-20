@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="offline_title">Si offline</string>
+    <string name="offline_text">Nepodarilo sa načítať spojenia. Skontroluj pripojenie na internet.</string>
+    <string name="retry">Skúsiť znova</string>
+</resources>
