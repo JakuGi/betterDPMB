@@ -1,0 +1,35 @@
+{
+  "name": "lepsie-dpmb",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "data": "tsx scripts/build-gtfs.ts",
+    "data:if-missing": "tsx scripts/build-gtfs.ts --if-missing",
+    "predev": "npm run data:if-missing",
+    "dev": "next dev",
+    "build": "npm run data && next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "gtfs-realtime-bindings": "^2.2.0",
+    "leaflet": "^1.9.4",
+    "next": "16.4.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/adm-zip": "^0.6.0",
+    "@types/leaflet": "^1.9.22",
+    "@types/node": "^24",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.2.0",
+    "adm-zip": "^0.6.1",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.3"
+  }
+}

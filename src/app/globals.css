@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #e30613;
+  --color-brand-dark: #b80510;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+:root {
+  --bg: #f4f5f7;
+  --card: #ffffff;
+  --fg: #111827;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --soft: #f3f4f6;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --card: #161b22;
+    --fg: #e6edf3;
+    --muted: #8b949e;
+    --line: #2a313c;
+    --soft: #1f2630;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-card: var(--card);
+  --color-soft: var(--soft);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-sans);
+  overscroll-behavior-y: none;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Leaflet ---------- */
+.leaflet-container {
+  font: inherit;
+  background: var(--soft);
+}
+
+/* tmavá mapa: OSM dlaždice invertujeme */
+@media (prefers-color-scheme: dark) {
+  .leaflet-tile-pane {
+    filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.85) saturate(0.6);
+  }
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: var(--card);
+  color: var(--fg);
+}
+
+.veh {
+  position: relative;
+  width: 30px;
+  height: 30px;
+}
+.veh > b {
+  position: absolute;
+  inset: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--c);
+  color: var(--t, #fff);
+  font: 700 11px/1 var(--font-sans);
+  letter-spacing: -0.03em;
+  box-shadow:
+    0 0 0 2px var(--ring, #fff),
+    0 1px 4px rgb(0 0 0 / 0.35);
+  z-index: 1;
+}
+.veh.tram > b {
+  border-radius: 6px;
+}
+.veh > i {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.veh > i::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -4px;
+  margin-left: -5px;
+  border: 5px solid transparent;
+  border-bottom: 7px solid var(--c);
+  border-top: 0;
+}
+.veh.d-ok {
+  --ring: #22c55e;
+}
+.veh.d-minor {
+  --ring: #f59e0b;
+}
+.veh.d-major {
+  --ring: #ef4444;
+}
+.veh.d-early {
+  --ring: #3b82f6;
+}
+.veh.sel > b {
+  box-shadow:
+    0 0 0 3px var(--ring, #fff),
+    0 0 0 6px rgb(0 0 0 / 0.5);
+}
+
+.stop-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 3px solid #374151;
+}
+.me-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: #2563eb;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 6px rgb(37 99 235 / 0.25);
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.live-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
