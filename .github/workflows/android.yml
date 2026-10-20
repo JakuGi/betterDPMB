@@ -1,0 +1,87 @@
+# Android appka (Trusted Web Activity) – build podpísaného APK/AAB.
+#
+#  • push tagu „android-vX.Y.Z“  → build + GitHub Release s APK (a AAB pre Google Play)
+#  • ručné spustenie (Actions → Android → Run workflow) → len build, súbory v „Artifacts“
+#
+# Potrebné secrets (Settings → Secrets and variables → Actions):
+#   ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
+
+name: Android
+
+on:
+  push:
+    tags: ["android-v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: "9.8.2"
+
+      - name: Verzia
+        id: ver
+        run: |
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            echo "name=${GITHUB_REF_NAME#android-v}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=0.0.0-dev.${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
+          fi
+          # verzia 1 je prvý ručný build, CI pokračuje vyššie
+          echo "code=$((GITHUB_RUN_NUMBER + 1))" >> "$GITHUB_OUTPUT"
+
+      - name: Podpisový kľúč
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [[ -z "$ANDROID_KEYSTORE_BASE64" ]]; then
+            echo "::error::Chýba secret ANDROID_KEYSTORE_BASE64 (viď android/README.md)"
+            exit 1
+          fi
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/release.jks
+
+      - name: Build
+        env:
+          ANDROID_KEYSTORE_FILE: release.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          VERSION_NAME: ${{ steps.ver.outputs.name }}
+          VERSION_CODE: ${{ steps.ver.outputs.code }}
+        run: gradle -p android --no-daemon assembleRelease bundleRelease
+
+      - name: Premenovanie výstupov
+        run: |
+          mkdir -p out
+          cp android/app/build/outputs/apk/release/app-release.apk "out/LepsieDPMB-${{ steps.ver.outputs.name }}.apk"
+          cp android/app/build/outputs/bundle/release/app-release.aab "out/LepsieDPMB-${{ steps.ver.outputs.name }}.aab"
+          rm -f android/release.jks
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: LepsieDPMB-${{ steps.ver.outputs.name }}
+          path: out/*
+
+      - name: GitHub Release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v3
+        with:
+          name: LepšieDPMB ${{ steps.ver.outputs.name }}
+          files: out/*.apk
+          body: |
+            Android aplikácia LepšieDPMB (MHD Brno). Obsah a aktualizácie sa načítavajú priamo z https://betterdpmb.vercel.app.
+
+            **Inštalácia:** stiahni `LepsieDPMB-${{ steps.ver.outputs.name }}.apk` v mobile a otvor ho. Pri prvej inštalácii Android vyžiada
+            povolenie „Inštalovať neznáme aplikácie“ pre prehliadač/súbory. Ak sa objaví kontrola Play Protect, zvoľ „Skontrolovať aplikáciu“ / „Inštalovať aj tak“.

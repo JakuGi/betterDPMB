@@ -184,6 +184,12 @@ export default function FavoritesPage() {
       <SyncCard store={store} />
 
       <p className="mt-6 text-xs text-muted">{t("footerNote")}</p>
+      <p className="mt-2 text-xs text-muted">
+        {t("unofficial")}{" "}
+        <a href="/sukromie" className="underline">
+          {t("privacy")}
+        </a>
+      </p>
     </div>
   );
 }

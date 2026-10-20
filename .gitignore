@@ -9,3 +9,14 @@ next-env.d.ts
 
 .vercel
 .env*
+
+# Android
+android/keystore/
+android/keystore.properties
+android/local.properties
+android/.gradle/
+android/.kotlin/
+android/build/
+android/app/build/
+*.apk
+*.aab

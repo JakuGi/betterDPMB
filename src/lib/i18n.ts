@@ -241,6 +241,8 @@ const cs = {
   shareTitle: "LepšieDPMB – oblíbené",
   footerNote:
     "Oblíbené se ukládají jen v tomto prohlížeči. Data: jízdní řád a online polohy IDS JMK (KORDIS JMK, DPMB) – otevřená data GTFS / GTFS-RT. Zpoždění je odhadované z polohy vozidla.",
+  privacy: "Ochrana soukromí",
+  unofficial: "Neoficiální aplikace – není provozována DPMB ani KORDIS JMK.",
   up: "Výš",
   down: "Níž",
   remove: "Odstranit",
@@ -495,6 +497,8 @@ const sk: Dict = {
   shareTitle: "LepšieDPMB – obľúbené",
   footerNote:
     "Obľúbené sa ukladajú len v tomto prehliadači. Dáta: cestovný poriadok a online polohy IDS JMK (KORDIS JMK, DPMB) – otvorené dáta GTFS / GTFS-RT. Meškanie je odhadované z polohy vozidla.",
+  privacy: "Ochrana súkromia",
+  unofficial: "Neoficiálna aplikácia – neprevádzkuje ju DPMB ani KORDIS JMK.",
   up: "Vyššie",
   down: "Nižšie",
   remove: "Odstrániť",
@@ -745,6 +749,8 @@ const en: Dict = {
   shareTitle: "LepšieDPMB – favourites",
   footerNote:
     "Favourites are stored only in this browser. Data: IDS JMK timetable and live positions (KORDIS JMK, DPMB) – open GTFS / GTFS-RT data. Delays are estimated from vehicle positions.",
+  privacy: "Privacy policy",
+  unofficial: "Unofficial app – not operated by DPMB or KORDIS JMK.",
   up: "Up",
   down: "Down",
   remove: "Remove",

@@ -50,6 +50,11 @@ nový build si stiahne čerstvý cestovný poriadok. Ručne sa dá vynútiť cez
 
 Potrebné premenné prostredia (Production): `CRON_SECRET`, `DEPLOY_HOOK_URL` (Settings → Git → Deploy Hooks, vetva `main`).
 
+## Android appka
+
+V priečinku `android/` je Android appka (Trusted Web Activity), ktorá načítava tento web – vydanie na GitHube aj Google Play
+popisuje [`android/README.md`](android/README.md).
+
 ## Poznámka k OneDrive
 
 Projekt je v priečinku synchronizovanom cez OneDrive. Ten pri synchronizácii `node_modules` občas spomalí dev server („waiting for the filesystem to settle“). Ak to bude prekážať, presuň projekt mimo OneDrive (napr. `C:\dev\lepsieDPMB`).

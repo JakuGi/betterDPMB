@@ -6,6 +6,10 @@ const nextConfig: NextConfig = {
     "/api/**": ["./data/timetable.json"],
   },
   devIndicators: false,
+  // Android appka (TWA) overuje prepojenie s webom cez tento súbor.
+  async rewrites() {
+    return [{ source: "/.well-known/assetlinks.json", destination: "/api/assetlinks" }];
+  },
   serverExternalPackages: ["gtfs-realtime-bindings"],
 };
 

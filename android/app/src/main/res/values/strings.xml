@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LepšieDPMB</string>
+    <string name="host_name" translatable="false">betterdpmb.vercel.app</string>
+    <string name="launch_url" translatable="false">https://betterdpmb.vercel.app/</string>
+    <!-- prepojenie appky s webom; web to potvrdzuje v /.well-known/assetlinks.json -->
+    <string name="asset_statements" translatable="false">
+        [{
+            \"relation\": [\"delegate_permission/common.handle_all_urls\"],
+            \"target\": {\"namespace\": \"web\", \"site\": \"https://betterdpmb.vercel.app\"}
+        }]
+    </string>
+</resources>
