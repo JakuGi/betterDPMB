@@ -1,13 +1,16 @@
 # LepšieDPMB – Android appka
 
-Appka je **Trusted Web Activity (TWA)**: po spustení otvorí https://betterdpmb.vercel.app na celú obrazovku (cez Chrome, bez adresného
-riadka; bez Chromu cez WebView). Všetok obsah aj aktualizácie idú z Vercelu – novú verziu appky treba vydať len pri zmene ikony,
-názvu, adresy a pod.
+Natívna Android appka s **vlastným WebView** (bez Chromu, bez prvkov prehliadača), ktorá zobrazuje
+https://betterdpmb.vercel.app. Všetky dáta aj aktualizácie obsahu idú z Vercelu – novú verziu appky treba vydať len pri zmene
+samotnej appky (ikona, názov, natívne správanie).
 
-- balík: `io.github.jakugi.betterdpmb`
+- balík: `io.github.jakugi.betterdpmb`, kód v `app/src/main/java/.../MainActivity.java`
 - minSdk 26 (Android 8), targetSdk 36
-- oprávnenia: len internet (polohu žiada stránka cez Chrome)
-- prepojenie s webom: `/.well-known/assetlinks.json` (`src/app/api/assetlinks/route.ts`)
+- správanie ako appka: bez približovania, systémové tlačidlo Späť, odkazy mimo webu sa otvárajú v prehliadači,
+  offline obrazovka, svetlý/tmavý režim podľa systému, texty appky v češtine/slovenčine/angličtine
+- oprávnenia: internet, poloha (pýta sa až pri použití „Moja poloha“)
+- web pozná appku podľa `LepsieDPMBApp` v User-Agent (skryje ponuku inštalácie, vypne označovanie textu)
+- odkazy na betterdpmb.vercel.app sa otvárajú v appke (App Links cez `/.well-known/assetlinks.json`)
 
 ## ⚠️ Podpisový kľúč – zálohuj ho
 
@@ -26,13 +29,13 @@ Odtlačok SHA-256: `96:D5:FE:0B:10:19:0E:7D:94:F3:C0:3C:C4:4A:DE:55:31:41:A3:21:
    | `ANDROID_KEYSTORE_PASSWORD` | `storePassword` z `android/keystore.properties` |
    | `ANDROID_KEY_ALIAS` | `betterdpmb` |
    | `ANDROID_KEY_PASSWORD` | `keyPassword` z `android/keystore.properties` |
-2. Vydanie verzie: `git tag android-v1.0.1 && git push origin android-v1.0.1` – workflow `.github/workflows/android.yml`
+2. Vydanie verzie: `git tag android-v1.1.1 && git push origin android-v1.1.1` – workflow `.github/workflows/android.yml`
    zostaví podpísané APK + AAB a vytvorí **GitHub Release** s APK.
-3. Prvá verzia 1.0.0 je už zostavená v `android/release/` – dá sa nahrať aj ručne (Releases → Draft a new release).
+3. Aktuálna verzia 1.1.0 je už zostavená v `android/release/` – dá sa nahrať aj ručne (Releases → Draft a new release).
 
 **Inštalácia v mobile:** otvor Release v mobile, stiahni `.apk`, otvor ho a povoľ „Inštalovať neznáme aplikácie“ pre prehliadač.
-Appka je podpísaná release kľúčom, cieli na aktuálne API a žiada len internet, takže ju Play Protect bežne pustí; pri neznámej
-appke môže ponúknuť „Skontrolovať aplikáciu“ – po kontrole sa inštalácia dokončí.
+Pri appke od neznámeho vývojára môže Play Protect zobraziť varovanie – zvoľ *Viac podrobností → Inštalovať aj tak*
+(prípadne *Skontrolovať aplikáciu*).
 
 **Overovanie vývojárov (sideloading):** Google ohlásil, že appky inštalované mimo Google Play budú musieť pochádzať od
 overeného vývojára – najprv (od 9/2026) v Brazílii, Indonézii, Singapure a Thajsku, celosvetovo od roku 2027. Keď sa to bude týkať
@@ -47,11 +50,11 @@ neoprávnene označil, dá sa podať žiadosť o prehodnotenie cez formulár Pla
    počas 14 dní** (testerov pridáš e-mailom, appku si nainštalujú cez odkaz).
 2. **Vytvor appku:** názov napr. „LepšieDPMB – MHD Brno“, typ *App*, *Free*. Do popisu uveď, že ide o **neoficiálnu** appku
    (nie je od DPMB ani KORDIS JMK) – Google inak môže appku zamietnuť pre pravidlá o vydávaní sa za iných / ochranných známkach.
-3. **Nahraj AAB:** `android/release/LepsieDPMB-1.0.0.aab` (ďalšie verzie z Actions → Artifacts) do *Testing → Closed testing*.
+3. **Nahraj AAB:** `android/release/LepsieDPMB-1.1.0.aab` (ďalšie verzie z Actions → Artifacts) do *Testing → Closed testing*.
    Ponechaj **Play App Signing** (Google podpisuje appku svojím kľúčom, náš kľúč slúži ako *upload key*).
-4. **Prepoj appku z Play s webom:** v *Test and release → Setup → App signing* skopíruj **SHA-256 odtlačok kľúča „App signing key“**
-   a vo Verceli pridaj premennú `ANDROID_SHA256_FINGERPRINTS` (Production) s touto hodnotou → *Redeploy*. Bez toho bude appka
-   z Play zobrazovať adresný riadok. Overenie: `https://betterdpmb.vercel.app/.well-known/assetlinks.json` musí obsahovať oba odtlačky.
+4. **App Links pre verziu z Play:** v *Test and release → Setup → App signing* skopíruj **SHA-256 odtlačok kľúča „App signing key“**
+   a vo Verceli pridaj premennú `ANDROID_SHA256_FINGERPRINTS` (Production) s touto hodnotou → *Redeploy*, aby sa odkazy na web
+   otvárali priamo v appke. Overenie: `https://betterdpmb.vercel.app/.well-known/assetlinks.json` musí obsahovať oba odtlačky.
 5. **Store listing:** ikona 512×512 (`https://betterdpmb.vercel.app/pwa-icon/512`), feature graphic 1024×500, aspoň 2 snímky
    obrazovky z mobilu, krátky a dlhý popis.
 6. **App content:**

@@ -52,7 +52,7 @@ Potrebné premenné prostredia (Production): `CRON_SECRET`, `DEPLOY_HOOK_URL` (S
 
 ## Android appka
 
-V priečinku `android/` je Android appka (Trusted Web Activity), ktorá načítava tento web – vydanie na GitHube aj Google Play
+V priečinku `android/` je natívna Android appka s vlastným WebView, ktorá načítava tento web – vydanie na GitHube aj Google Play
 popisuje [`android/README.md`](android/README.md).
 
 ## Poznámka k OneDrive
