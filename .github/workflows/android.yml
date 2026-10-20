@@ -17,7 +17,26 @@ permissions:
   contents: write
 
 jobs:
+  # Bez podpisového kľúča sa build preskočí (napr. pri ručne nahranom Release).
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      enabled: ${{ steps.key.outputs.enabled }}
+    steps:
+      - id: key
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [[ -n "$ANDROID_KEYSTORE_BASE64" ]]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Chýbajú secrets s podpisovým kľúčom – build sa preskakuje (viď android/README.md)."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
   build:
+    needs: check
+    if: needs.check.outputs.enabled == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -45,12 +64,7 @@ jobs:
       - name: Podpisový kľúč
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-        run: |
-          if [[ -z "$ANDROID_KEYSTORE_BASE64" ]]; then
-            echo "::error::Chýba secret ANDROID_KEYSTORE_BASE64 (viď android/README.md)"
-            exit 1
-          fi
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/release.jks
+        run: echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/release.jks
 
       - name: Build
         env:
