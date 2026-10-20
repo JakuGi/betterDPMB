@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { IconArrowDown, IconArrowUp, IconBriefcase, IconHome, IconLocate, IconTrash } from "@/components/icons";
+import { InstallCard } from "@/components/InstallApp";
 import { PlaceInput } from "@/components/PlaceInput";
 import { Card, LineBadge, SectionTitle, Spinner } from "@/components/ui";
 import { getPosition } from "@/lib/client/hooks";
@@ -98,6 +99,9 @@ export default function FavoritesPage() {
           </div>
         </Card>
       )}
+
+      <SectionTitle>{t("appSection")}</SectionTitle>
+      <InstallCard />
 
       <SectionTitle>{t("myPlaces")}</SectionTitle>
       <Card className="space-y-3 p-4">

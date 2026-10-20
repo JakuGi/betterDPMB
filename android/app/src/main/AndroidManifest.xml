@@ -12,6 +12,7 @@
 
     <application
         android:allowBackup="true"
+        android:manageSpaceActivity="com.google.androidbrowserhelper.trusted.ManageDataLauncherActivity"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -61,6 +62,15 @@
                     android:host="@string/host_name"
                     android:scheme="https" />
             </intent-filter>
+        </activity>
+
+        <!-- LauncherActivity pri štarte pridáva skratku „Nastavenia stránky“ – bez tejto aktivity appka spadne -->
+        <activity
+            android:name="com.google.androidbrowserhelper.trusted.ManageDataLauncherActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.customtabs.trusted.MANAGE_SPACE_URL"
+                android:value="@string/launch_url" />
         </activity>
 
         <activity android:name="com.google.androidbrowserhelper.trusted.FocusActivity" />

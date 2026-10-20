@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { DepartureList } from "@/components/DepartureList";
 import { IconBriefcase, IconChevron, IconClock, IconHome, IconLocate, IconMap, IconRoute, IconStar, IconX } from "@/components/icons";
+import { InstallCard } from "@/components/InstallApp";
 import { buildPlanUrl, buildTrasaUrl, PlannerForm } from "@/components/PlannerForm";
 import { Card, DelayBadge, EmptyState, LineBadge, SectionTitle, Spinner } from "@/components/ui";
 import type { DeparturesResponse } from "@/lib/api-types";
@@ -46,6 +47,10 @@ export function Home() {
           ))}
         </div>
       )}
+
+      <div className="mt-3">
+        <InstallCard dismissible />
+      </div>
 
       {mounted && store.history.length > 0 && <SearchHistory />}
 

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 import type { I18nKey } from "@/lib/i18n";
 import { useT } from "@/lib/client/store";
+import { useServiceWorker } from "./InstallApp";
 import { IconAlert, IconHome, IconLines, IconMap, IconRoute, IconSettings, IconStop } from "./icons";
 
 const NAV = [
@@ -20,6 +21,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const path = usePathname() ?? "/";
   const fullBleed = path.startsWith("/mapa") || path.startsWith("/trasa");
   const { t, lang } = useT();
+  useServiceWorker();
 
   useEffect(() => {
     document.documentElement.lang = lang;
