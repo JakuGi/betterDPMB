@@ -81,6 +81,8 @@ jobs:
           mkdir -p out
           cp android/app/build/outputs/apk/release/app-release.apk "out/LepsieDPMB-${{ steps.ver.outputs.name }}.apk"
           cp android/app/build/outputs/bundle/release/app-release.aab "out/LepsieDPMB-${{ steps.ver.outputs.name }}.aab"
+          # stály názov pre odkaz na webe: releases/latest/download/LepsieDPMB.apk
+          cp android/app/build/outputs/apk/release/app-release.apk out/LepsieDPMB.apk
           rm -f android/release.jks
 
       - uses: actions/upload-artifact@v7

@@ -34,7 +34,8 @@ const subscribe = (cb: () => void) => {
   return () => listeners.delete(cb);
 };
 
-export const APK_URL = "https://github.com/JakuGi/betterDPMB/releases/latest";
+/** Priamy odkaz na APK z posledného Release (stály názov súboru) – rovno sa stiahne, bez stránky GitHubu. */
+export const APK_URL = "https://github.com/JakuGi/betterDPMB/releases/latest/download/LepsieDPMB.apk";
 
 const DISMISS_KEY = "lepsieDPMB:installDismissed";
 
@@ -78,7 +79,7 @@ export function useInstall() {
   return { ready: env != null, platform: env?.platform ?? "desktop", inApp: !!env?.inApp, installed: !!env?.standalone || installedNow, canPrompt, promptInstall };
 }
 
-/** Karta s inštaláciou appky. `dismissible` = dá sa skryť (na úvodnej stránke). V appke sa nezobrazuje. */
+/** Karta s inštaláciou appky – len na webe v mobile. `dismissible` = dá sa skryť (na úvodnej stránke). V appke ani na počítači sa nezobrazuje. */
 export function InstallCard({ dismissible = false, title }: { dismissible?: boolean; title?: React.ReactNode }) {
   const { t } = useT();
   const { ready, platform, inApp, installed, canPrompt, promptInstall } = useInstall();
@@ -92,7 +93,7 @@ export function InstallCard({ dismissible = false, title }: { dismissible?: bool
     }
   }, [dismissible]);
 
-  if (!ready || inApp || (dismissible && (dismissed || installed))) return null;
+  if (!ready || inApp || platform === "desktop" || (dismissible && (dismissed || installed))) return null;
   const android = platform === "android";
 
   return (
@@ -122,7 +123,7 @@ export function InstallCard({ dismissible = false, title }: { dismissible?: bool
             <>
               <p className="font-semibold">{t("androidTitle")}</p>
               <p className="mt-0.5 text-muted">{t("androidText")}</p>
-              <a href={APK_URL} target="_blank" rel="noreferrer" className="mt-3 inline-block rounded-xl bg-brand px-4 py-2 font-semibold text-white shadow-sm hover:bg-brand-dark">
+              <a href={APK_URL} download className="mt-3 inline-block rounded-xl bg-brand px-4 py-2 font-semibold text-white shadow-sm hover:bg-brand-dark">
                 {t("androidBtn")}
               </a>
               <p className="mt-2 text-xs text-muted">{t("androidHint")}</p>
