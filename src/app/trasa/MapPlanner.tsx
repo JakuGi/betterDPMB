@@ -560,7 +560,7 @@ export function MapPlanner({
             </div>
             {journeys.length > 0 && (
               <Link
-                href={`/spojenie?from=${encodeURIComponent(ptParam(points.A))}&to=${encodeURIComponent(ptParam(points.B))}${atEpoch ? `&t=${atEpoch}` : ""}`}
+                href={`/spojenie?from=${encodeURIComponent(ptParam(points.A))}&to=${encodeURIComponent(ptParam(points.B))}${atEpoch ? `&t=${atEpoch}` : ""}&src=map`}
                 className="block rounded-xl border border-line bg-card py-3 text-center text-sm font-medium hover:bg-soft"
               >
                 {t("moreInList")}

@@ -214,11 +214,13 @@ export function addRecent(p: Place) {
   }));
 }
 
-/** Zapíše vyhľadávanie do histórie (rovnakú dvojicu presunie navrch). */
+const historyKey = (from: Place, to: Place, source: "search" | "map" = "search") => `${source}:${placeKey(from)}>${placeKey(to)}`;
+
+/** Zapíše vyhľadávanie do histórie (rovnakú dvojicu v rovnakom režime presunie navrch; Spojenia a Trasa sa vedú zvlášť). */
 export function addHistory(from: Place, to: Place, source: "search" | "map" = "search") {
-  const key = `${placeKey(from)}>${placeKey(to)}`;
+  const key = historyKey(from, to, source);
   setStore((s) => {
-    const prev = s.history.find((h) => `${placeKey(h.from)}>${placeKey(h.to)}` === key);
+    const prev = s.history.find((h) => historyKey(h.from, h.to, h.source) === key);
     const entry: HistoryEntry = { id: prev?.id ?? uid(), from, to, at: Date.now(), source };
     return { ...s, history: [entry, ...s.history.filter((h) => h !== prev)].slice(0, HISTORY_MAX) };
   });

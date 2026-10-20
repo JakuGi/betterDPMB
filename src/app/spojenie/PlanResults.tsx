@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { JourneyCard } from "@/components/JourneyCard";
-import { buildTrasaUrl, PlannerForm } from "@/components/PlannerForm";
+import { buildTrasaUrl, PlannerForm, setPlannerDraft } from "@/components/PlannerForm";
 import { IconChevron, IconMap, IconRefresh } from "@/components/icons";
 import { EmptyState, ErrorBox, Spinner, StarButton, UpdatedAt } from "@/components/ui";
 import type { JourneyDTO, PlanResponse } from "@/lib/api-types";
@@ -11,7 +11,7 @@ import { fmtDate, fmtTime } from "@/lib/client/format";
 import { useGeolocation, useNow, usePolling } from "@/lib/client/hooks";
 import { addHistory, findFavRoute, paramToPlace, placeToParam, toggleFavRoute, updateSettings, useStore, useT } from "@/lib/client/store";
 
-export function PlanResults({ fromParam, toParam, tParam }: { fromParam: string | null; toParam: string | null; tParam: number | null }) {
+export function PlanResults({ fromParam, toParam, tParam, fromMap = false }: { fromParam: string | null; toParam: string | null; tParam: number | null; fromMap?: boolean }) {
   const store = useStore();
   const { t } = useT();
   const now = useNow(15_000);
@@ -24,10 +24,13 @@ export function PlanResults({ fromParam, toParam, tParam }: { fromParam: string 
   const [loadingLater, setLoadingLater] = useState(false);
   const [startT, setStartT] = useState<number | null>(tParam);
 
-  // každé vyhľadanie zapíšeme do histórie
+  // každé vyhľadanie zapíšeme do histórie (zoznam otvorený zo záložky Trasa už má záznam z mapy)
+  // a necháme ho vo formulári na úvodnej stránke, aby sa po návrate dalo upraviť
   useEffect(() => {
-    if (from && to) addHistory(from, to);
-  }, [from, to]);
+    if (!from || !to || fromMap) return;
+    addHistory(from, to);
+    setPlannerDraft({ from, to });
+  }, [from, to, fromMap]);
 
   const here = geo.status === "ok" ? { lat: geo.lat, lon: geo.lon } : null;
   const fromQ = from ? placeToParam(from, here) : null;

@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { DepartureList } from "@/components/DepartureList";
 import { IconBriefcase, IconChevron, IconClock, IconHome, IconLocate, IconMap, IconRoute, IconStar, IconX } from "@/components/icons";
 import { InstallCard } from "@/components/InstallApp";
-import { buildPlanUrl, buildTrasaUrl, PlannerForm } from "@/components/PlannerForm";
+import { buildTrasaUrl, PlannerForm, setPlannerDraft } from "@/components/PlannerForm";
 import { Card, DelayBadge, EmptyState, LineBadge, SectionTitle, Spinner } from "@/components/ui";
 import type { DeparturesResponse } from "@/lib/api-types";
 import { fmtCountdown, fmtDistance, fmtTime } from "@/lib/client/format";
@@ -35,15 +35,15 @@ export function Home() {
   return (
     <div>
       <Card className="p-4">
-        <PlannerForm />
+        <PlannerForm persist />
       </Card>
 
       {mounted && (store.home || store.work || store.routes.length > 0) && (
         <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1">
-          {store.home && <QuickLink href={buildPlanUrl(here, store.home)} icon={<IconHome size={16} />} label={t("goHome")} />}
-          {store.work && <QuickLink href={buildPlanUrl(here, store.work)} icon={<IconBriefcase size={16} />} label={t("goWork")} />}
+          {store.home && <QuickLink onClick={() => fillPlanner(here, store.home!)} icon={<IconHome size={16} />} label={t("goHome")} />}
+          {store.work && <QuickLink onClick={() => fillPlanner(here, store.work!)} icon={<IconBriefcase size={16} />} label={t("goWork")} />}
           {store.routes.map((r) => (
-            <QuickLink key={r.id} href={buildPlanUrl(r.from, r.to)} icon={<IconRoute size={16} />} label={r.label || `${short(r.from, t)} → ${short(r.to, t)}`} />
+            <QuickLink key={r.id} onClick={() => fillPlanner(r.from, r.to)} icon={<IconRoute size={16} />} label={r.label || `${short(r.from, t)} → ${short(r.to, t)}`} />
           ))}
         </div>
       )}
@@ -123,6 +123,12 @@ function ago(ms: number, t: TFn, lang: keyof typeof LOCALES) {
   return new Date(ms).toLocaleDateString(LOCALES[lang], { day: "numeric", month: "numeric" });
 }
 
+/** Obľúbené a história len vyplnia formulár – zastávky sa dajú ešte upraviť či vymeniť pred hľadaním. */
+function fillPlanner(from: Place, to: Place) {
+  setPlannerDraft({ from, to });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 function placeLabel(p: Place, t: TFn) {
   return p.kind === "here" ? t("myLocation") : p.name;
 }
@@ -152,20 +158,31 @@ function SearchHistory() {
         {list.map((h) => {
           const fav = !!findFavRoute(store, h.from, h.to);
           const fromMap = h.source === "map";
+          const body = (
+            <>
+              {fromMap ? <IconMap size={18} className="shrink-0 text-blue-500" /> : <IconClock size={18} className="shrink-0 text-muted" />}
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-medium">
+                  {placeLabel(h.from, t)} <span className="text-muted">→</span> {placeLabel(h.to, t)}
+                </span>
+                <span className="block text-xs text-muted">
+                  {fromMap ? t("historyMap") : t("historySearch")} · {ago(h.at, t, lang)}
+                </span>
+              </span>
+            </>
+          );
+          const rowClass = "flex min-w-0 flex-1 items-center gap-3 px-3 py-2.5 text-left hover:bg-soft";
           return (
             <div key={h.id} className="flex items-center gap-1 pr-1">
-              <Link
-                href={fromMap ? buildTrasaUrl(h.from, h.to) : buildPlanUrl(h.from, h.to)}
-                className="flex min-w-0 flex-1 items-center gap-3 px-3 py-2.5 hover:bg-soft"
-              >
-                {fromMap ? <IconMap size={18} className="shrink-0 text-blue-500" /> : <IconClock size={18} className="shrink-0 text-muted" />}
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate font-medium">
-                    {placeLabel(h.from, t)} <span className="text-muted">→</span> {placeLabel(h.to, t)}
-                  </span>
-                  <span className="block text-xs text-muted">{ago(h.at, t, lang)}</span>
-                </span>
-              </Link>
+              {fromMap ? (
+                <Link href={buildTrasaUrl(h.from, h.to)} className={rowClass}>
+                  {body}
+                </Link>
+              ) : (
+                <button type="button" onClick={() => fillPlanner(h.from, h.to)} className={rowClass}>
+                  {body}
+                </button>
+              )}
               {!fromMap && (
                 <Link href={buildTrasaUrl(h.from, h.to)} className="rounded-full p-2 text-muted hover:text-fg" title={t("showOnMap")}>
                   <IconMap size={18} />
@@ -199,12 +216,12 @@ function short(p: Place, t: TFn) {
   return name.length > 18 ? `${name.slice(0, 17)}…` : name;
 }
 
-function QuickLink({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
+function QuickLink({ onClick, icon, label }: { onClick: () => void; icon: React.ReactNode; label: string }) {
   return (
-    <Link href={href} className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line bg-card px-3 py-2 text-sm font-medium shadow-sm hover:bg-soft">
+    <button type="button" onClick={onClick} className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line bg-card px-3 py-2 text-sm font-medium shadow-sm hover:bg-soft">
       {icon}
       {label}
-    </Link>
+    </button>
   );
 }
 

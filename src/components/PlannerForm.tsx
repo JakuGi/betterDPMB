@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { addRecent, placeToParam, updateSettings, useStore, useT, type Place } from "@/lib/client/store";
 import { IconClock, IconMap, IconSwap, IconWalk, IconWheelchair } from "./icons";
 import { PlaceInput } from "./PlaceInput";
@@ -10,6 +10,43 @@ import { PlaceInput } from "./PlaceInput";
 function toLocalInput(d: Date) {
   const p = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+// ---------- rozpracované vyhľadávanie ----------
+// Zastávky vo formulári na úvodnej stránke ostanú aj po návrate z výsledkov (počas relácie).
+
+type Draft = { from: Place | null; to: Place | null };
+const DRAFT_KEY = "lepsieDPMB:plannerDraft";
+const EMPTY_DRAFT: Draft = { from: null, to: null };
+let draft: Draft | null = null;
+const draftListeners = new Set<() => void>();
+
+function getDraft(): Draft {
+  if (draft) return draft;
+  let d = EMPTY_DRAFT;
+  try {
+    const raw = sessionStorage.getItem(DRAFT_KEY);
+    if (raw) d = { ...EMPTY_DRAFT, ...JSON.parse(raw) };
+  } catch {
+    /* nedostupné úložisko */
+  }
+  return (draft = d);
+}
+
+/** Vyplní formulár na úvodnej stránke (bez vyhľadania). */
+export function setPlannerDraft(patch: Partial<Draft>) {
+  draft = { ...getDraft(), ...patch };
+  try {
+    sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+  } catch {
+    /* nedostupné úložisko */
+  }
+  draftListeners.forEach((l) => l());
+}
+
+function subscribeDraft(cb: () => void) {
+  draftListeners.add(cb);
+  return () => draftListeners.delete(cb);
 }
 
 export function buildPlanUrl(from: Place, to: Place, t?: number | null) {
@@ -29,12 +66,30 @@ export function buildTrasaUrl(from: Place | string, to: Place | string, t?: numb
   return `/trasa?${qs.toString()}`;
 }
 
-export function PlannerForm({ initialFrom = null, initialTo = null, initialTime = null, compact = false }: { initialFrom?: Place | null; initialTo?: Place | null; initialTime?: number | null; compact?: boolean }) {
+/** `persist` = zastávky sa pamätajú (úvodná stránka) a dajú sa vyplniť zvonka cez setPlannerDraft. */
+export function PlannerForm({
+  initialFrom = null,
+  initialTo = null,
+  initialTime = null,
+  compact = false,
+  persist = false,
+}: {
+  initialFrom?: Place | null;
+  initialTo?: Place | null;
+  initialTime?: number | null;
+  compact?: boolean;
+  persist?: boolean;
+}) {
   const router = useRouter();
   const store = useStore();
   const { t } = useT();
-  const [from, setFrom] = useState<Place | null>(initialFrom);
-  const [to, setTo] = useState<Place | null>(initialTo);
+  const saved = useSyncExternalStore(subscribeDraft, getDraft, () => EMPTY_DRAFT);
+  const [localFrom, setLocalFrom] = useState<Place | null>(initialFrom);
+  const [localTo, setLocalTo] = useState<Place | null>(initialTo);
+  const from = persist ? saved.from : localFrom;
+  const to = persist ? saved.to : localTo;
+  const setFrom = (p: Place | null) => (persist ? setPlannerDraft({ from: p }) : setLocalFrom(p));
+  const setTo = (p: Place | null) => (persist ? setPlannerDraft({ to: p }) : setLocalTo(p));
   const [timeMode, setTimeMode] = useState<"now" | "at">(initialTime ? "at" : "now");
   const [at, setAt] = useState(() => toLocalInput(initialTime ? new Date(initialTime * 1000) : new Date()));
   const [error, setError] = useState<string | null>(null);
@@ -64,8 +119,11 @@ export function PlannerForm({ initialFrom = null, initialTo = null, initialTime 
         <button
           type="button"
           onClick={() => {
-            setFrom(to);
-            setTo(from);
+            if (persist) setPlannerDraft({ from: to, to: from });
+            else {
+              setLocalFrom(to);
+              setLocalTo(from);
+            }
           }}
           className="absolute right-12 top-1/2 z-10 -translate-y-1/2 rounded-full border border-line bg-card p-2 text-muted shadow-sm hover:text-fg"
           aria-label={t("swap")}
